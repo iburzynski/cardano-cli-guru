@@ -9,11 +9,33 @@ This utility uses `direnv` to set and unset various environment variables whenev
     * You can use the **[Cardano EZ-Installer](https://github.com/iburzynski/cardano-ez-installer)** to easily install both applications via Nix and automatically configure your node for use with all three networks (`preprod` and `preview` testnets, `mainnet`).
 
 2. Install the `direnv` utility. 
-    * If you have Nix, the easiest way to do this is via the following Nix command:
+    * If you have Nix installed, the easiest way to do this is via the following Nix command:
 
         ```sh
-        nix-env -iA nixpkgs.direnv
+        nix profile install nixpkgs#direnv
         ```
+
+      >**NOTE:** this command requires the `experimental-features` `nix-command` and `flakes` to be enabled in your `/etc/nix/nix.conf` file:
+
+        ```
+        experimental-features = nix-command flakes
+        ```
+
+      >You'll need to restart the `nix-daemon` after making changes to `nix.conf`:
+
+        **Linux:**
+
+        ```sh
+        sudo systemctl restart nix-daemon
+        ```
+
+        **MacOS:**
+
+        ```sh
+        sudo launchctl stop org.nixos.nix-daemon
+        sudo launchctl start org.nixos.nix-daemon
+        ```
+
 
 3. Clone this repository in your terminal and navigate to the `cardano-cli-guru` directory:
 
