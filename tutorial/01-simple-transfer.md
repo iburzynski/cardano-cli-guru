@@ -1,9 +1,9 @@
 # **`cardano-cli` Exercise 01: Simple Transfer**
-**Note**: you'll need your local node to be running and fully synced to complete this exercise. If your node is correctly installed and configured for use with Jambhala, you can use  the appropriate alias in your terminal to start `cardano-node`:
+**Note**: you'll need your local node to be running and fully synced to complete this exercise. If your node is correctly installed and configured for use with Cardano EZ-Installer, you can use the appropriate alias in your terminal to start `cardano-node`:
 - `preprod-node` for preprod testnet
 - `preview-node` for preview testnet
 
-See the **[Starting and syncing the node](./00-installation.md#starting-and-syncing-the-node)** section of the installation guide if you face any difficulty.
+See the **[Cardano EZ-Installer README](https://github.com/iburzynski/cardano-ez-installer)** if you face any difficulty.
 
 ***
 In this exercise we'll practice generating wallet addresses and submitting a simple transfer transaction.
@@ -24,10 +24,10 @@ Recall that in the Cardano blockchain, each user has a **private** key (also ref
 
 The `cardano-cli`'s `address` command has two subcommands to generate key pairs and derive the associated Cardano address: **`key-gen`** and **`build`**.
 
-Since we'll need to use this combination of subcommands multiple times over the course of these exercises in a uniform manner, Jambhala provides a helper script called `keygen`, consisting of the following:
+Since we'll need to use this combination of subcommands multiple times over the course of these exercises in a uniform manner, Cardano CLI Guru provides a helper script called `key-gen`, consisting of the following:
 
 ```sh
-# cardano-cli/keygen
+# cardano-cli-guru/scripts/key-gen
 
 vkey="$KEYS_PATH/$1.vkey"
 skey="$KEYS_PATH/$1.skey"
@@ -66,10 +66,10 @@ wrote address to: assets/keys/bob.addr
 ```
 
 ### **Viewing a User's Address**
-When using `cardano-cli`, we'll frequently need to reference user addresses (stored in `.addr` files). Jambhala provides a simple script that takes a user's name as argument and outputs their address:
+When using `cardano-cli`, we'll frequently need to reference user addresses (stored in `.addr` files). Cardano CLI Guru provides a simple script that takes a user's name as argument and outputs their address:
 
 ```sh
-# cardano-cli/addr
+# cardano-cli-guru/scripts/addr
 
 echo $(cat "$ADDR_PATH/$1.addr")
 ```
@@ -89,14 +89,14 @@ We now have addresses for our transaction parties, but they don't contain any fu
 
 Copy Alice's wallet address from the previous step and fund the wallet with 10,000 Test ADA from the [Testnet Faucet](https://docs.cardano.org/cardano-testnet/tools/faucet).
 
->Make sure to select the correct `Environment` at the Testnet Faucet. By default Jambhala uses the `Preview Testnet`.
+>Make sure to select the correct `Environment` at the Testnet Faucet. By default Cardano EZ-Installer uses the `Preview Testnet`.
 
 >Make sure to use the address generated for **your** Alice wallet, not the sample output provided above - otherwise you'll fund the wrong Alice!
 
-Let's check the UTXOs at Alice's address to confirm receipt of the Test ADA. The **`utxo`** subcommand of `cardano-cli`'s `query` command is used to list the UTXOs at an address. As this is a very common operation, Jambhala provides a script called `utxos` that contains the following:
+Let's check the UTXOs at Alice's address to confirm receipt of the Test ADA. The **`utxo`** subcommand of `cardano-cli`'s `query` command is used to list the UTXOs at an address. As this is a very common operation, Cardano CLI Guru provides a script called `utxos` that contains the following:
 
 ```sh
-# cardano-cli/utxos
+# cardano-cli-guru/scripts/utxos
 
 cardano-cli query utxo \
 --address $(addr $1)
@@ -148,7 +148,7 @@ Note the various parameters that must be provided:
 * **Input(s)**: the `--tx-in` parameter specifies funds that will be spent by the transaction, which are outputs (UTXOs) from earlier transactions. A transaction can have multiple inputs, in which case we'd include multiple `--tx-in` lines with an associated UTXO. Here we are spending a single input, and its UTXO is the one from Alice's wallet we selected and stored in the variable `U`.
 * **Output(s)**: the `--tx-out` parameter specifies where funds (UTXOs) will be sent. An output consists of a payment address and an amount. A transaction can have multiple outputs, in which case we'd include multiple `--tx-out` lines with associated addresses and amounts. Here we are sending a single output to Bob, whose address we include by interpolating the output of the `addr` script with `bob` as argument. We then specify the amount of the transfer (`+250000000`, or 250 ADA).
 * **Change Address**: the `--change-address` parameter specifies which address the balance of funds will be sent to after the outputs and fees are deducted from the inputs. Since the input UTXOs must be spent in their entirety, any excess funds must be sent as an additional transaction output to some address (in this case Alice, who the input belongs to).
-* **Out File**: the `--out-file` parameter specifies the file path where the transaction data will be stored. The data is stored in `json` format, but its file extension doesn't matter (by convention `.raw` is used). The filename we choose (here `transfer`) can be passed as an argument to helper scripts that Jambhala provides for convenience.
+* **Out File**: the `--out-file` parameter specifies the file path where the transaction data will be stored. The data is stored in `json` format, but its file extension doesn't matter (by convention `.raw` is used). The filename we choose (here `transfer`) can be passed as an argument to helper scripts that Cardano CLI Guru provides for convenience.
 
 When we run this command, we'll see terminal output that includes the automatically calculated fee:
 
@@ -170,10 +170,10 @@ If we inspect the `transfer.raw` file created in the `assets/tx` directory, we s
 ## **4. <a id="sign"></a> Sign the transaction**
 The next step is for Alice to sign the transaction with her secret key. For this we use the **`sign`** subcommand of `cardano-cli`'s `transaction` command.
 
-Since we'll use this command multiple times over the course of these exercises with similar arguments, Jambhala provides a helper script called `tx-sign`, consisting of the following:
+Since we'll use this command multiple times over the course of these exercises with similar arguments, Cardano CLI Guru provides a helper script called `tx-sign`, consisting of the following:
 
 ```sh
-# cardano-cli/tx-sign
+# cardano-cli-guru/scripts/tx-sign
 
 tx="$TX_PATH/$1"
 skeyfiles=""
@@ -216,14 +216,13 @@ Notice the value of the `type` attribute has changed from `Unwitnessed Tx Babbag
 ## **5. <a id="submit"></a> Submit the transaction**
 The final step of the transaction process is to submit the signed transaction. For this we use the **`submit`** subcommand of `cardano-cli`'s `transaction` command.
 
-Like `transaction sign`, we'll use `transaction submit` multiple times over the course of these exercises with similar arguments, so Jambhala provides a helper script called `tx-submit`, consisting of the following:
+Like `transaction sign`, we'll use `transaction submit` multiple times over the course of these exercises with similar arguments, so Cardano CLI Guru provides a helper script called `tx-submit`, consisting of the following:
 
 ```sh
-# cardano-cli/tx-submit
+# cardano-cli-guru/scripts/tx-submit
 
 cardano-cli transaction submit \
---tx-file "$TX_PATH/$1.signed" \
-$NET
+--tx-file "$TX_PATH/$1.signed"
 ```
 
 The `submit` subcommand is quite simple: we just provide the filepath of the signed transaction and the network option. Note the use of variables again to make the script flexible and reusable.

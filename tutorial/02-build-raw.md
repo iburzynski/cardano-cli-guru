@@ -1,9 +1,9 @@
 # **`cardano-cli` Exercise 02: Building Transactions with `build-raw`**
-**Note**: you'll need your local node to be running and fully synced to complete this exercise. If your node is correctly installed and configured for use with Jambhala, you can use  the appropriate alias in your terminal to start `cardano-node`:
+**Note**: you'll need your local node to be running and fully synced to complete this exercise. If your node is correctly installed and configured for use with Cardano EZ-Installer, you can use the appropriate alias in your terminal to start `cardano-node`:
 - `preprod-node` for preprod testnet
 - `preview-node` for preview testnet
 
-See the **[Starting and syncing the node](./00-installation.md#starting-and-syncing-the-node)** section of the installation guide if you face any difficulty.
+See the **[Cardano EZ-Installer README](https://github.com/iburzynski/cardano-ez-installer)** if you face any difficulty.
 
 We'll also be reusing the addresses and key pairs created during the previous exercise, so you'll need to have completed at least **Steps 1 & 2** of **[Exercise 1](./01-simple-transfer.md)** before proceeding further.
 
@@ -27,10 +27,10 @@ The process for this exercise will be as follows:
 
 Since `build-raw` requires us to calculate transaction fees manually, we need a copy of the parameters on hand; this way we can use the fee information contained within to arrive at the correct amount for the fee.
 
-Jambhala provides a helper script called `params` to query and save the protocol parameters in the `assets` directory:
+Cardano CLI Guru provides a helper script called `params` to query and save the protocol parameters in the `assets` directory:
 
 ```sh
-# cardano-cli/params
+# cardano-cli-guru/scripts/params
 
 cardano-cli query protocol-parameters \
 --out-file $PARAMS_PATH
@@ -100,7 +100,7 @@ In the draft, the `tx-out` for Alice's change, `invalid-hereafter` and `fee` can
 
 ## **3. <a id="fee"></a> Calculate the fee and change**
 
-Jambhala provides a `min-fee` script, which uses `cardano-cli`'s `transaction calculate-min-fee` command to determine the transaction fee.
+Cardano CLI Guru provides a `min-fee` script, which uses `cardano-cli`'s `transaction calculate-min-fee` command to determine the transaction fee.
 
 The script takes four arguments, in the following format:
 
