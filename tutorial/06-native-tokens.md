@@ -155,7 +155,7 @@ Calculate the transaction fee, storing it in a temporary variable `FEE`.
 
 ```sh
 FEE=$(cardano-cli transaction calculate-min-fee \
---tx-body-file $TX_PATH/$native-mint.draft \
+--tx-body-file $TX_PATH/native-mint.draft \
 --tx-in-count 1 \
 --tx-out-count 1 \
 --witness-count 2 \
@@ -193,10 +193,10 @@ For this transaction we won't create witness files and use `transaction assemble
 
 ```sh
 cardano-cli transaction sign \
---tx-body-file native-mint.raw \
+--tx-body-file $TX_PATH/native-mint.raw \
 --signing-key-file $KEYS_PATH/native-policy.skey \
 --signing-key-file $KEYS_PATH/alice.skey \
---out-file native-mint.signed
+--out-file $TX_PATH/native-mint.signed
 ```
 
 Or, using the `tx-sign` script:
