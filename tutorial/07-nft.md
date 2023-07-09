@@ -99,10 +99,10 @@ We start by getting the current slot using the `cardano-cli query tip` command (
 }
 ```
 
-Copy the slot number that appears after `"slot"`.  We'll set our deadline to 60 minutes (3600 slots) from the current tip. You can calculate this by hand or use the `eval` command. i.e.:
+Copy the slot number that appears after `"slot"`.  We'll set our deadline to 60 minutes (3600 slots) from the current tip. You can calculate this by hand or use the `expr` command. i.e.:
 
 ```sh
-DEADLINE=$(eval 22121952 + 3600)
+DEADLINE=$(expr 22121952 + 3600)
 echo $DEADLINE
 22125552
 ```
