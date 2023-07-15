@@ -84,7 +84,7 @@ PID=$(cardano-cli transaction policyid \
 To produce the desired token name in hexadecimal format, we can use the `xxd` Unix tool to encode a plain text string (here "jambcoin" - replace with your desired token name):
 
 ```sh
-echo jambcoin | xxd -ps | tr -d \\n
+echo -n jambcoin | xxd -ps | tr -d \\n
 ```
 
 We first echo the string and pipe it to `xxd` with the `-ps` flag, which formats the output in "postscript plain hexdump style". We then pipe that result to the `tr` utility to delete (`-d`) the trailing newline character (`\\n`).
@@ -92,7 +92,7 @@ We first echo the string and pipe it to `xxd` with the `-ps` flag, which formats
 You can save the result to a temporary variable (like `TNAME`):
 
 ```sh
-TNAME=$(echo jambcoin | xxd -ps | tr -d \\n)
+TNAME=$(echo -n jambcoin | xxd -ps | tr -d \\n)
 ```
 
 We can then save our final token representation to a variable `T`:

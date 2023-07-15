@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Get the current slot
+tip_output=$(cardano-cli query tip)
+current_slot=$(echo "$tip_output" | grep -oP '(?<="slot": )[0-9]+')
+
+# Get the current POSIX time
+current_posix=$(date -u +%s)
+
+print_help() {
+  echo "Usage: calc-time [--plus MINUTES]"
+  echo "Prints the current slot and POSIX time or adds MINUTES to the slot and POSIX time."
+  echo "Options:"
+  echo "  --plus MINUTES    Add MINUTES to the current slot and POSIX time."
+}
+
+add_minutes() {
+  local posix=$1
+  local minutes=$2
+  local seconds=$((minutes * 60))
+  echo $((posix + seconds))
+}
+
+if [ "$1" == "--plus" ] || [ "$1" == "-p" ]; then
+  if [ -n "$2" ] && [ "$2" -gt 0 ]; then
+    echo "NEW SLOT:  $(add_minutes $current_slot $2)"
+    echo "NEW POSIX: $(add_minutes $current_posix $2)"
+  else
+    echo "Error: Invalid value for MINUTES. Please provide a positive integer."
+    exit 1
+  fi
+elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+  print_help
+else
+  echo "CURRENT SLOT:  $current_slot"
+  echo "CURRENT POSIX: $current_posix"
+fi

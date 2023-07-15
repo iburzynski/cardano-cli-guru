@@ -41,7 +41,7 @@ cardano-cli address key-gen \
 --signing-key-file $KEYS_PATH/nft-policy.skey
 
 cardano-cli address build \
---payment-verification-key-file $KEYS_PATH/native-policy.vkey \
+--payment-verification-key-file $KEYS_PATH/nft-policy.vkey \
 --out-file $ADDR_PATH/nft-policy.addr
 ```
 
@@ -132,7 +132,7 @@ PID=$(cardano-cli transaction policyid \
 ```
 
 ```sh
-TNAME=$(echo JAMB1 | xxd -ps | tr -d \\n)
+TNAME=$(echo -n JAMB1 | xxd -ps | tr -d \\n)
 ```
 
 ```sh
@@ -287,7 +287,6 @@ cardano-cli transaction build \
 --change-address $(addr alice) \
 --mint "-1 $T" \
 --mint-script-file $NATIVE_SCRIPTS_PATH/nft.script \
---metadata-json-file "$TX_PATH/nft-metadata.json" \
 --invalid-hereafter $DEADLINE \
 --witness-override 2 \
 --out-file $TX_PATH/nft-burn.raw

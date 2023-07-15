@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+input=$1
+
+urls=(
+    "https://cardano-mainnet.blockfrost.io/api/v0/"
+    "https://cardano-preprod.blockfrost.io/api/v0/"
+    "https://cardano-preview.blockfrost.io/api/v0/"
+    "https://cardano-mainnet.blockfrost.io/api/v0/"
+    "https://cardano-preprod.blockfrost.io/api/v0/"
+    "https://cardano-preview.blockfrost.io/api/v0/"
+)
+
+matched_url=""
+for url in "${urls[@]}"; do
+    if [[ $input == "$url"* ]]; then
+        matched_url="$url"
+        break
+    fi
+done
+
+if [[ $input == /* ]]; then
+# Trim leading backslash if present
+    query="${input:1}"
+elif [[ -n $matched_url ]]; then
+# Trim entire URL prefix if matching
+    query="${input#$matched_url}"
+else
+    query=$input
+fi
+
+if [[ $CARDANO_NODE_NETWORK_ID -eq 1 ]]; then
+    project_id=$BLOCKFROST_PROJECT_ID_PREPROD
+elif [[ $CARDANO_NODE_NETWORK_ID -eq 2 ]]; then
+    project_id=$BLOCKFROST_PROJECT_ID_PREVIEW
+elif [[ $CARDANO_NODE_NETWORK_ID -eq "mainnet" ]]; then
+    project_id=$BLOCKFROST_PROJECT_ID_MAINNET
+fi
+
+if command -v http >/dev/null 2>&1; then
+    https --print=b "$BLOCKFROST_URL/$query" "project_id:$project_id"
+else
+    curl -H "project_id:$project_id" "$BLOCKFROST_URL/$query" | jq
+fi

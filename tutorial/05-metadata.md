@@ -115,10 +115,12 @@ echo $BLOCKFROST_PROJECT_ID_PREPROD
 ```
 
 ### **Query transaction metadata by label**
+Cardano CLI Guru includes a `blockfrost` script that takes a URL endpoint and queries Blockfrost using the Cardano network and corresponding Project ID (API key) you have set in your `cardano-cli-guru/.env` file.
+
 You can now view transactions containing a particular metadata label by running the command below:
 
 ```sh
-curl -H "project_id: $BLOCKFROST_PROJECT_ID_PREVIEW" "https://cardano-$TESTNET.blockfrost.io/api/v0/metadata/txs/labels/$LABEL" | jq
+blockfrost metadata/txs/labels/$LABEL
 ```
 
 You should see your transaction and its metadata appear in the results, as well as any other transactions submitted with the same label. You can replace the `$LABEL` variable in the URL to view transactions with a different label.
