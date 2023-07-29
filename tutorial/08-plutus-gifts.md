@@ -5,7 +5,7 @@ In this exercise we'll interact with our first Plutus smart contract using `card
 
 We'll practice locking and unlocking UTxOs from the "always succeeds" script - a Plutus contract containing no validation logic, permitting UTxOs locked at the script address to be unlocked via arbitrary transactions.
 
-We'll perform this pair of locking/unlocking transactions using several methods, to highlight some of the features introduced by the Vasil hard fork, namely **[inline datums](https://cips.cardano.org/cips/cip32/)** and **[reference scripts](https://cips.cardano.org/cips/cip33/)**.
+We'll perform this pair of locking/unlocking transactions using two methods, to highlight the **[inline datums](https://cips.cardano.org/cips/cip32/)** feature introduced by the Vasil hard fork.
 
 ## **Script File**
 We'll need a script file containing the serialised "always succeeds" contract. The tutorial assumes the presence of this file at `cardano-cli-guru/assets/scripts/plutus/gift.plutus`.
@@ -228,43 +228,3 @@ cardano-cli transaction build \
 ```
 
 This will use the inline datum present in the input UTxO, so our end user isn't responsible for providing it.
-
-## **Lock/Unlock UTxOs (with Reference Script)**
-Another new feature introduced by the Vasil Hard Fork is **reference scripts**, which allows the contents of scripts to be attached to outputs and used to satisfy script requirements during validation, rather than requiring the spending transaction to do so. Similar to the role inline datums serve for datums, reference scripts allow users to reuse the script data included in an existing UTxO rather than be responsible for providing it themselves.
-
-While convenient, script referencing is costly, at least from the standpoint of the initial transaction that attaches the script to an output (and thus stores it on the active part of the chain). However, script referencing lowers the cost of every transaction referencing the script; if the script is used often, this can result in significant savings in transaction fees. It also reduces the quantity of data being stored on-chain, and increases the number of scripts that can be used in a single transaction without hitting the transaction size limit.
-
-To lock a UTxO at the "always succeeds" address and add a reference to the script in the output UTxO, we include the `--tx-out-reference-script-file` option:
-
-```sh
-cardano-cli transaction build \
---tx-in $U \
---tx-out "$(addr gift)+3000000" \
---tx-out-inline-datum-file $DATA_PATH/unit.json \
---tx-out-reference-script-file $PLUTUS_SCRIPTS_PATH/gift.plutus \
---change-address "$(addr charlie)" \
---out-file $TX_PATH/gift-give.raw
-```
-
->Note that this transaction also uses an inline datum. This is not required, but is done for convenience.
-
-### **Unlock UTxO with reference script**
-Unlocking a UTxO containing a reference script requires several additional options to the `transaction build` subcommand:
-* `--spending-tx-in-reference`: provides the UTxO input containing the reference script.
-* `--spending-plutus-script-v2`: signals the use of a Plutus v2 reference script.
-* `--spending-reference-tx-in-inline-datum-present`: signals that an inline datum is present on the referenced UTxO (reference script version of `--tx-in-linline-datum-present`).
-* `--spending-reference-tx-in-redeemer-file`: provides the redeemer to the script (reference script version of `--tx-in-redeemer-file`).
-
-Here is our unlocking transaction:
-
-```sh
-cardano-cli transaction build \
---tx-in $U \
---spending-tx-in-reference $U \
---spending-plutus-script-v2 \
---spending-reference-tx-in-inline-datum-present \
---spending-reference-tx-in-redeemer-file $DATA_PATH/unit.json \
---tx-in-collateral $C \
---change-address "$(addr charlie)" \
---out-file $TX_PATH/gift-claim.raw
-```
