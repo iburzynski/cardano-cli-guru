@@ -180,7 +180,7 @@ cardano-cli transaction build \
 
 ```sh
 cardano-cli transaction sign \
---tx-body-file $TX_PATH/gift-lock-h.raw \
+--tx-body-file $TX_PATH/gift-unlock-h.raw \
 --signing-key-file $KEYS_PATH/bob.skey \
 --out-file $TX_PATH/gift-unlock-h.signed"
 ```
