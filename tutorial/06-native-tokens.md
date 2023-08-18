@@ -104,13 +104,17 @@ T=$PID.$TNAME
 Cardano CLI Guru also provides a `token` helper script to easily prepare a token representation:
 
 ```sh
-T=$(token native jambcoin)
+T=$(token -n native jambcoin)
+```
 
+Echoing the value of `$T` shows us our token representation:
+
+```sh
 echo $T
 d1298d07e8fefa6f65c8f01fb8a43e94e086729583dc3b1121dc75cf.6a616d62636f696e
 ```
 
-The script takes the name of an existing policy script (`$1`) and the desired name for the token (`$2`). It performs two steps: **getting the Policy ID** of the script, and **encoding the token name**. This is achieved via two subscripts, `policyid` and `token-name`, corresponding to the `cardano-cli transaction policyid` and `xxd` commands explained above. The results are then concatenated together with a period.
+The `token` script takes a flag of `-n` (for Native minting policies) or `-p` (for Plutus minting policies), the name of an existing policy script, and the desired name for the token. It performs two steps: **getting the Policy ID** of the script, and **encoding the token name**. This is achieved via two subscripts, `policyid` and `token-name`, corresponding to the `cardano-cli transaction policyid` and `xxd` commands explained above. The results are then concatenated together with a period.
 
 ***
 
