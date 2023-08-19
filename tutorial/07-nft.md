@@ -142,7 +142,7 @@ T=$PID.$TNAME
 Alternatively, you can use the `token` script:
 
 ```sh
-T=$(token nft JAMB1)
+T=$(token -n nft JAMB1)
 ```
 
 ***
