@@ -5,4 +5,4 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-echo $1 | xxd -ps | tr -d \\n
+echo -n $1 | xxd -ps | tr -d \\n
