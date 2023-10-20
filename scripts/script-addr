@@ -39,8 +39,13 @@ fi
 addr=$ADDR_PATH/$script_name.addr
 
 if [ -f "$addr" ]; then
-  >&2 echo "address file '$addr' already exists"
-  exit 1
+  read -p "Address file '$addr' already exists. Do you want to overwrite it? [Y/N]: " response
+  case $response in
+    [Yy]* ) rm "$addr";;
+    [Nn]* ) exit 1;;
+    * ) >&2 echo "Invalid response. Please enter Y or N."
+        exit 1;;
+  esac
 fi
 
 cardano-cli address build \
@@ -48,5 +53,5 @@ cardano-cli address build \
 --out-file $addr
 
 if [ $? -eq 0 ]; then
-  echo "wrote script address to '$addr'"
+  echo "Wrote script address to '$addr'"
 fi

@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
+force=false
+while getopts "f" opt; do
+  case $opt in
+    f) force=true ;;
+    \?) >&2 echo "Invalid option: -$OPTARG"
+        exit 1 ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
 if [ -z "$1" ]; then
-    >&2 echo "expected name as argument"
+    >&2 echo "Expected name as argument"
     exit 1
 fi
 
@@ -9,20 +20,26 @@ vkey="$KEYS_PATH/$1.vkey"
 skey="$KEYS_PATH/$1.skey"
 addr="$ADDR_PATH/$1.addr"
 
-if [ -f "$vkey" ]; then
-    >&2 echo "verification key file $vkey already exists"
-    exit 1
-fi
+check_file() {
+  local file=$1
+  if [ -f "$file" ]; then
+    if [ "$force" = true ]; then
+      rm "$file"
+    else
+      read -p "$2 file '$file' already exists. Do you want to overwrite it? [Y/N]: " response
+      case $response in
+        [Yy]* ) rm "$file";;
+        [Nn]* ) exit 1;;
+        * ) >&2 echo "Invalid response. Please enter Y or N."
+            check_file $file $2;;
+      esac
+    fi
+  fi
+}
 
-if [ -f "$skey" ]; then
-    >&2 echo "signing key file $skey already exists"
-    exit 1
-fi
-
-if [ -f "$addr" ]; then
-    >&2 echo "address file $addr already exists"
-    exit 1
-fi
+check_file "$vkey" "Verification key"
+check_file "$skey" "Signing key"
+check_file "$addr" "Address"
 
 cardano-cli address key-gen \
 --verification-key-file $vkey \
@@ -33,7 +50,7 @@ cardano-cli address build \
 --out-file $addr
 
 if [ $? -eq 0 ]; then
-  echo "wrote verification key for $1 to '$vkey'"
-  echo "wrote signing key for $1 to '$skey'"
-  echo "wrote address for $1 to '$addr'"
+  echo "Wrote verification key for $1 to '$vkey'"
+  echo "Wrote signing key for $1 to '$skey'"
+  echo "Wrote address for $1 to '$addr'"
 fi
