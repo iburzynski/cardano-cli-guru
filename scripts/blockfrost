@@ -6,9 +6,6 @@ urls=(
     "https://cardano-mainnet.blockfrost.io/api/v0/"
     "https://cardano-preprod.blockfrost.io/api/v0/"
     "https://cardano-preview.blockfrost.io/api/v0/"
-    "https://cardano-mainnet.blockfrost.io/api/v0/"
-    "https://cardano-preprod.blockfrost.io/api/v0/"
-    "https://cardano-preview.blockfrost.io/api/v0/"
 )
 
 matched_url=""

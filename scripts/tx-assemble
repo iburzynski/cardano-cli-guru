@@ -23,5 +23,5 @@ $witfiles \
 --out-file $tx.signed
 
 if [ $? -eq 0 ]; then
-  echo "wrote assembled transaction to '$tx.signed'"
+  echo "Wrote assembled transaction to '$tx.signed'"
 fi

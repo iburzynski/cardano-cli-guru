@@ -11,7 +11,7 @@ print_help() {
   echo "Usage: calc-time [--plus MINUTES]"
   echo "Prints the current slot and POSIX time or adds MINUTES to the slot and POSIX time."
   echo "Options:"
-  echo "  --plus MINUTES    Add MINUTES to the current slot and POSIX time."
+  echo "  --plus MINUTES     Add MINUTES to the current slot and POSIX time."
 }
 
 add_minutes() {
