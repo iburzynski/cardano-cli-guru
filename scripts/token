@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 function usage {
-    echo "Usage: $0 [-n|-p] POLICY_NAME TOKEN_NAME"
-    echo "  -n: Native script"
-    echo "  -p: Plutus script"
+    echo "Usage: token [-n|-p] POLICY_NAME TOKEN_NAME"
+    echo "  -n     Native script"
+    echo "  -p     Plutus script"
     exit 1
 }
 
