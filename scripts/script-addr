@@ -33,6 +33,9 @@ done
 
 if [ -z "$script_name" ]; then
   >&2 echo "Usage: script-addr [-n FILENAME] [-p FILENAME]"
+  >&2 echo "Options:"
+  >&2 echo "  -n     Native script"
+  >&2 echo "  -p     Plutus script"
   exit 1
 fi
 

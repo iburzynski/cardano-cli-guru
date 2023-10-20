@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+if [ -z "$1" ]; then
+    echo "Usage: key-gen [-f] <name>"
+    echo "Options:"
+    echo "  -f     Force overwrite of existing files"
+    exit 1
+fi
 
 force=false
 while getopts "f" opt; do
