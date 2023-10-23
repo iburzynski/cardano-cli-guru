@@ -1,5 +1,5 @@
 # **`cardano-cli` Exercise 08: Plutus Gifts**
-In this exercise we'll interact with our first Plutus smart contract using `cardano-cli`. Executing a Cardano smart contract requires (at least) two transactions: 
+In this exercise we'll interact with our first Plutus smart contract using `cardano-cli`. Interacting with a Cardano spending validator requires (at least) two transactions: 
 1. A UTxO can be "locked" at a script address (similar to sending funds to a PubKey address), which requires no validation (just like the recipient of a funds transfer doesn't need to provide a signature to authorize the receipt).
 2. A UTxO "locked" at the script address can be "unlocked" by providing appropriate inputs to its associated *validator* function to return a `True` value (this successful validation fulfills the same role as a signature in a PubKey address transaction, authorizing a transfer of funds).
 
@@ -46,6 +46,8 @@ You can also use Cardano CLI Guru's provided `script-addr` script with the `-p` 
 ```sh
 script-addr -p gift
 ```
+
+>**Note:** If you serialised the gift contract using the Jambhala CLI (`jamb -w gift`), the `gift.addr` file will have already been created for you in the `cardano-cli-guru/assets/addr` directory, so you don't need to use either of the commands above.
 
 ## **Lock UTxO (with Datum Hash)**
 Prior to the Vasil hard fork and the introduction of **inline datums**, transactions locking UTxOs at a Plutus script address weren't able to include the contents of a datum. Instead, the hash of the datum was included. 
