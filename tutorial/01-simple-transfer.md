@@ -1,5 +1,8 @@
 # **`cardano-cli` Exercise 01: Simple Transfer**
-**Note**: you'll need your local node to be running and fully synced to complete this exercise. If your node is correctly installed and configured for use with Cardano EZ-Installer, you can use the appropriate alias in your terminal to start `cardano-node`:
+**Note**: you'll need your local node to be running and fully synced to complete this exercise. 
+If you're using Cardano CLI Guru within the **[Jambhala](https://github.com/iburzynski/jambhala)** framework, the `j node` command will start `cardano-node` using whichever network is set by the `$CARDANO_NETWORK_ID` variable in `cardano-cli-guru/.env` (`preview` testnet by default).
+
+Alternatively, if your node is correctly installed and configured for use with Cardano EZ-Installer, you can use the appropriate alias in your terminal to start `cardano-node`:
 - `preprod-node` for preprod testnet
 - `preview-node` for preview testnet
 
@@ -18,13 +21,49 @@ The process consists of the following steps:
 
 ***
 ## **1. <a id="generate"></a> Generate keys and addresses**
-To build a transaction between two parties, we first need to generate key pairs and addresses for the sender (`alice`) and recipient (`bob`).
+To build a transaction between two parties, we first need to generate key-pairs and addresses for the sender (`alice`) and recipient (`bob`). The `cardano-cli`'s `address` command has two subcommands to generate key pairs and derive the associated Cardano address: **`key-gen`** and **`build`**.
 
-Recall that in the Cardano blockchain, each user has a **private** key (also referred to as the **signing** key), which is kept secret, and a **public** key (also referred to as the **verification** key), which is shared with others. The public key is used to derive a unique **address** that can receive and send transactions. Address derivation is performed by hashing the public key, encoding it in Bech32 format and adding a human-readable prefix.
+### **Generating keys**
+The `key-gen` subcommand creates an asymmetric cryptographic **key-pair**, consisting of public and private components (**verification key** and **signing key**, respectively). 
+* The **verification** key is used to derive an associated address on the network that can receive UTxOs and for verifying the owner's signatures in transactions.
+* The **signing key** is used to provide signatures that authorize the spending of associated UTxOs.
 
-The `cardano-cli`'s `address` command has two subcommands to generate key pairs and derive the associated Cardano address: **`key-gen`** and **`build`**.
+>**Note:** for real user key-pairs intended for use on the Cardano mainnet, the **signing key** should never, ever be shared with anyone or stored digitally.
 
-Since we'll need to use this combination of subcommands multiple times over the course of these exercises in a uniform manner, Cardano CLI Guru provides a helper script called `key-gen`, consisting of the following:
+We must provide the command two filepaths as options, indicating where we'd like the associated files to be created (we'll save them to the `$KEYS_PATH` directory, which is `cardano-cli-guru/assets/keys` by default): 
+
+```sh
+cardano-cli address key-gen \
+--verification-key-file $KEYS_PATH/alice.vkey \
+--signing-key-file $KEYS_PATH/alice.skey
+```
+
+### **Deriving addresses**
+Every possible verification key corresponds to an address on the Cardano network (whether that address has taken part in any on-chain transactions or not). Thus we can think of every possible Cardano address as always already existing in *virtual* form. But for the owner of a given key-pair to take part in a Cardano transaction, we need to know their address. While the subcommand we'll use is (perhaps misleadingly) called `build`, we should think of this operation not as *creating* an address (since it already exists *in potentia*), but as a function that takes the verification key and *derives* or *reveals* the address that is latent within it.
+
+When we provide the verification key file to the `build` subcommand, it computes the address by hashing the verification key and encoding it in **[Bech32](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki)** format, which adds a "human readable part" based on the network specified by the `CARDANO_NODE_NETWORK_ID` environment variable (`addr` for mainnet, `addr_test` for `preprod` and `preview` testnets), followed by a separator character (`1`) and the encoded address:
+
+```sh
+cardano-cli address build \
+--payment-verification-key-file $KEYS_PATH/alice.vkey \
+--out-file $ADDR_PATH/alice.addr
+```
+
+A file containing the address will be created in the `$ADDR_PATH` directory (`cardano-cli-guru/assets/addr` by default), and we can view the address using the `cat` command:
+
+```sh
+cat $ADDR_PATH/alice.addr
+```
+
+The `addr` helper script also displays an address when applied to a name:
+
+```sh
+addr alice
+```
+
+We'll rely on this script frequently when building transactions, as it provides an easy way to interpolate a given address into a shell command (i.e. `$(addr alice)`).
+
+>**Note:** we'll need to use this combination of subcommands to create additional key-pairs and addresses throughout the course of our tutorials. Cardano CLI Guru provides a helper script called `key-gen` to streamline this process, consisting of the following:
 
 ```sh
 # cardano-cli-guru/scripts/key-gen
@@ -51,14 +90,9 @@ It then runs the `key-gen` subcommand, providing out-filepaths for the `--verifi
 After generating the key files, the script runs the `build` subcommand, providing the location of the `.vkey` file to the `--payment-verification-key-file` parameter, as well as the desired `--out-file` location.
 
 ### **Run the `key-gen` script**
-Run the `key-gen` script twice to create keypairs and addresses for `alice` and `bob`:
+Run the `key-gen` script to create a keypair and derive an address `bob`:
 
 ```sh
-$ key-gen alice
-wrote verification key to: assets/keys/alice.vkey
-wrote signing key to: assets/keys/alice.skey
-wrote address to: assets/keys/alice.addr
-
 $ key-gen bob
 wrote verification key to: assets/keys/bob.vkey
 wrote signing key to: assets/keys/bob.skey
@@ -170,7 +204,14 @@ If we inspect the `transfer.raw` file created in the `assets/tx` directory, we s
 ## **4. <a id="sign"></a> Sign the transaction**
 The next step is for Alice to sign the transaction with her secret key. For this we use the **`sign`** subcommand of `cardano-cli`'s `transaction` command.
 
-Since we'll use this command multiple times over the course of these exercises with similar arguments, Cardano CLI Guru provides a helper script called `tx-sign`, consisting of the following:
+```sh
+cardano-cli transaction sign \
+--tx-body-file $TX_PATH/transfer.raw \
+--signing-key-file $KEYS_PATH/alice.skey \
+--out-file $TX_PATH/transfer.signed
+```
+
+>**Note:** since we'll use this command multiple times over the course of these exercises with similar arguments, Cardano CLI Guru provides a helper script called `tx-sign`, consisting of the following:
 
 ```sh
 # cardano-cli-guru/scripts/tx-sign
@@ -194,7 +235,7 @@ It then assigns a variable `skeyfiles` to an empty string, and loops over the re
 
 It then runs the `transaction sign` command, providing the `.raw` file location to the `--tx-body-file` option, the `skeyfiles` string produced by the loop, the network option, and the filepath/name for the out-file.
 
-Run the script by providing the transaction name (`transfer`) and signer name (`alice`) as arguments:
+Run the script by providing the transaction name (i.e. `transfer`) and signer name (i.e. `alice`) as arguments:
 
 ```sh
 tx-sign transfer alice
@@ -216,7 +257,14 @@ Notice the value of the `type` attribute has changed from `Unwitnessed Tx Babbag
 ## **5. <a id="submit"></a> Submit the transaction**
 The final step of the transaction process is to submit the signed transaction. For this we use the **`submit`** subcommand of `cardano-cli`'s `transaction` command.
 
-Like `transaction sign`, we'll use `transaction submit` multiple times over the course of these exercises with similar arguments, so Cardano CLI Guru provides a helper script called `tx-submit`, consisting of the following:
+The `submit` subcommand is quite simple -- we just provide the filepath of the signed transaction:
+
+```sh
+cardano-cli transaction submit \
+--tx-file $TX_PATH/transfer.signed
+```
+
+>**Note:** like `transaction sign`, we'll use `transaction submit` multiple times over the course of these exercises with similar arguments, so Cardano CLI Guru provides a helper script called `tx-submit`, consisting of the following:
 
 ```sh
 # cardano-cli-guru/scripts/tx-submit
@@ -224,8 +272,6 @@ Like `transaction sign`, we'll use `transaction submit` multiple times over the 
 cardano-cli transaction submit \
 --tx-file "$TX_PATH/$1.signed"
 ```
-
-The `submit` subcommand is quite simple: we just provide the filepath of the signed transaction and the network option. Note the use of variables again to make the script flexible and reusable.
 
 Run the script by providing the transaction name (`transfer`) as argument:
 

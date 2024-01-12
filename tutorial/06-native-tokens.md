@@ -39,8 +39,8 @@ Now create a file called `native.script` in the `assets/scripts/native` director
 
 ```json
 {
-  "keyHash": "<KEY-HASH>",
-  "type": "sig"
+  "type": "sig",
+  "keyHash": "<KEY-HASH>"
 }
 ```
 

@@ -28,7 +28,7 @@ Create a file with the following format, replacing the label `"20230321"` with t
 
 ```json
 {
-  "20230321": {
+  "20231209": {
     "name": "Alice",
     "message": "Om Dzambhala Dzalentraye Svaha"
   }
@@ -38,28 +38,25 @@ Create a file with the following format, replacing the label `"20230321"` with t
 Create a temporary `LABEL` variable for the date key you selected, so you can refer to it later:
 
 ```sh
-LABEL=20230321
+LABEL=20231209
 ```
 
 ## **Build a transaction with metadata**
-To build a transaction that includes metadata, we'll use the `transaction build-raw` command that we practiced in **[Exercise 2](./02-build-raw.md)**.
+To build a transaction that includes metadata, we'll use the `transaction build` command that we practiced in **[Exercise 1](./01-simple-transfer.md)**.
 
 Start by drafting the transaction. Instead of transfering funds between two users as we've done in previous examples, we can simply construct a single-user transaction that pays the transaction fee to publish the metadata on-chain, and returns the change to the original address:
 
 ```sh
-cardano-cli transaction build-raw \
+cardano-cli transaction build \
 --tx-in $U \
---tx-out $(addr alice)+0 \
---fee 0 \
+--change-address $(addr alice) \
 --metadata-json-file $TX_PATH/metadata.json \
---out-file $TX_PATH/metadata.draft
+--out-file $TX_PATH/metadata.raw
 ```
 
 Note the inclusion of the `--metadata-json-file` option with the filepath to the metadata file we created.
 
-Follow the remaining steps from **[Exercise 2](./02-build-raw.md)** to submit the transaction.
-
->Note that our transaction has only one `tx-out`: you'll need to adjust the `--tx-out-count` option to the `transaction calculate-min-fee` command accordingly. Our transaction also doesn't include a **validity interval**, so you don't need to calculate an interval and include the `--invalid-hereafter` option.
+Follow the remaining steps from **[Exercise 1](./01-simple-transfer.md)** to sign and submit the transaction.
 
 ## **View your transaction's metadata**
 You can run the `tx-hash` script for your `metadata` transaction and search for it on **[preview.cardanoscan.io](https://preview.cardanoscan.io/)** to view the transaction metadata (use **[preprod.cardanoscan.io](https://preprod.cardanoscan.io)** instead if using the `preprod` testnet).
@@ -83,7 +80,7 @@ Enter anything you like in the **`Project name`** field (i.e. "jambhala").
 In the **`Network`** dropdown, select the Cardano testnet your project is using (**`Cardano preview`** or **`Cardano preprod`**). By default Jambhala is configured to use **`Cardano preview`**. You can run the following command at any time to confirm which testnet your project is using:
 
 ```sh
-echo $TESTNET
+echo $CARDANO_NETWORK
 ```
 
 Once your project is created, you'll be taken to the project's page. Find the **`PROJECT ID`** field and click the copy icon to copy your ID.
