@@ -32,7 +32,7 @@ while getopts ":n:p:" opt; do
 done
 
 if [ -z "$script_name" ]; then
-  >&2 echo "Usage: policyid [-n FILENAME] [-p FILENAME]"
+  >&2 echo "Usage: script-hash [-n FILENAME] [-p FILENAME]"
   >&2 echo "Options:"
   >&2 echo "  -n     Native script"
   >&2 echo "  -p     Plutus script"
